@@ -2,15 +2,15 @@
 
 ## Overview
 
-This directory contains all the tooling necessary to build the ipxe images. The scripts build the following images:
+This directory contains all the tooling necessary to build the iPXE images. The scripts build the following iPXE bootable images:
 
 | File | Boot Environment | Purpose/use
 |---|---|---
-| `ipxe64.efi` | UEFI | To be loaded during [network boot](../network-boot-to-the-rescue.md)
+| `ipxe64.efi` | UEFI (64 bit) | To be loaded during [network boot](../network-boot-to-the-rescue.md)
 | `undionly.kpxe` | Legacy | To be loaded during [network boot](../network-boot-to-the-rescue.md)
 | `ipxe-floppy-legacy.img` | Legacy | Boot floppy
-| `ipxe-floppy-uefi.img` | UEFI | Boot floppy
-| `ipxe-iso-uefi.iso` | UEFI/Legacy | Hybrid boot ISO
+| `ipxe-floppy-uefi.img` | UEFI(64 bit)  | Boot floppy
+| `ipxe-iso-uefi.iso` | UEFI(64 bit) /Legacy | Hybrid boot ISO
 
 The boot ISO and floppies have the `embed.ipxe` file baked in. The default `embed.ipxe` offers DHCP and static configurations,
 so you can load and boot those files on a remote server via IPMI quickly, and the rest will be retrieved from the server directly,
