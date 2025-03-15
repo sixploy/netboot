@@ -4,6 +4,7 @@
 all: build post-deploy
 
 build: clean
+	[ ! -f script.ipxe ] && (echo "You did not provide script.ipxe. Please read the README."; exit 1)
 	docker run \
 		-i \
 		--rm \

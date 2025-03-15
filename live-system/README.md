@@ -6,7 +6,10 @@ This directory contains all the tooling necessary to build the netboot images:
 - initramdisk
 - live system .ISO file
 
-The netboot images will be available in the `bin/noble` directory. To build the images, install Docker and `make` and run:
+The netboot images will be available in the `bin/noble` directory. To build the images:
+
+1. Change the `SSH_KEYS` variable in the `Makefile` to point to your public key file. This file will be downloaded and baked into the image
+2. install Docker and `make` and run:
 
 ```bash
 $ make
