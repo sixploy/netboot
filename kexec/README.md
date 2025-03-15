@@ -2,11 +2,19 @@
 
 This directory contains a sample script to load the kernel and initramdisk from a remote location, build the kernel command line, and hand control over to the loaded kernel.
 
-The script `kexec-reboot.sh` needs a small tuning for your use case:
+## What's kexec
+
+Quoting the [`kexec` man page](https://linux.die.net/man/8/kexec):
+
+![Main menu](../pics/kexec.png)
+
+## TL;DR
+
+The script `kexec-reboot.sh` may need a small tuning for your use case:
 
 - edit `URL_PREFIX` to point to your webserver with the netboot images
 - change `IP`, `IP6` and `IPV6` to set your IPs (or set to use DHCP when applicable), see below
-- set the uplink network MAC address as the `MAC` variable. The MAC must be provided in the hyphenated format, see below
+- **(optional, if not discovered automatically)** set the uplink network MAC address as the `MAC` variable. The MAC must be provided in the hyphenated format, see below
 
 The script only loads the kernel, initramdisk, and configures the kernel command line. Once that's done, it's up to you to fire the `kexec` by running
 
@@ -28,7 +36,7 @@ To configure IPv4, set the `IP` variable to one of the following options:
 
 - `none`: IPv4 will not be configured
 - `dhcp`: DHCPv4 will be used to configure IPv4
-- specific static IP config, e.g. `192.0.2.2::192.0.2.1:255.255.255.0::${DEVICE}:off:8.8.8.8`
+- specific static IP config, e.g. `192.0.2.2::192.0.2.1:255.255.255.0::eth0:off:8.8.8.8`
 
 The static IP config uses the extended format, which is specified in the [kernel docs](https://www.kernel.org/doc/Documentation/filesystems/nfs/nfsroot.txt).
 
