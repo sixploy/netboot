@@ -6,8 +6,8 @@ This directory contains all the tooling necessary to build the ipxe images. The 
 
 | File | Boot Environment | Purpose/use
 |---|---|---
-| `ipxe64.efi` | UEFI | To be loaded during network boot
-| `undionly.kpxe` | Legacy | To be loaded during network boot
+| `ipxe64.efi` | UEFI | To be loaded during [network boot](../network-boot-to-the-rescue.md)
+| `undionly.kpxe` | Legacy | To be loaded during [network boot](../network-boot-to-the-rescue.md)
 | `ipxe-floppy-legacy.img` | Legacy | Boot floppy
 | `ipxe-floppy-uefi.img` | UEFI | Boot floppy
 | `ipxe-iso-uefi.iso` | UEFI/Legacy | Hybrid boot ISO
@@ -20,9 +20,10 @@ over the network.
 
 There's a sample `embed.example.ipxe`. Copy it to a file named `embed.ipxe` and adjust the `url_prefix` to point to the webserver holding your boot images.
 
-## Post-build script
+## Post-deploy script
 
 You can create a `post-deploy.sh` file, set it as executable, and it will be executed at the end of the build process automatically.
+The script can, for example, synchronise the data to the TFTP or HTTP server.
 
 ## Build
 

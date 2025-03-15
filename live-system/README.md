@@ -6,7 +6,7 @@ This directory contains all the tooling necessary to build the netboot images:
 - initramdisk
 - live system .ISO file
 
-To build the images, install Docker and `make` and run:
+The netboot images will be available in the `bin/noble` directory. To build the images, install Docker and `make` and run:
 
 ```bash
 $ make
@@ -22,12 +22,17 @@ You can copy them to a webserver of your choice.
 > If you want to load the images from iPXE, the webserver must make them available over HTTP (it must not redirect to HTTPS).
 > For kexec-based boot, the images can be available only over HTTPS.
 
+## Post-deploy script
+
+You can create a `post-deploy.sh` file, set it as executable, and it will be executed at the end of the build process automatically.
+The script can, for example, synchronise the data to the TFTP or HTTP server.
+
 
 # Exploring the initramfs
 
 If you want to explore the initramfs built by the live system builder, on a Debian/Ubuntu system you can use `unmkinitramfs`:
 
-```
+```bash
 $ mkdir -p /tmp/initramdisk
 $ unmkinitramfs bin/noble/initrd.img /tmp/initramdisk
 ```
