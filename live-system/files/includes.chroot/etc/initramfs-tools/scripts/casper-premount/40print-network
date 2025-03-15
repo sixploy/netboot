@@ -1,0 +1,27 @@
+#!/bin/sh
+
+PREREQ=""
+
+prereqs()
+{
+       echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+    prereqs)
+           prereqs
+           exit 0
+           ;;
+esac
+
+echo "=== Print-network start ==="
+/usr/bin/ip addr show
+/usr/bin/ip route show
+/usr/bin/ip -6 route show
+cat /etc/resolv.conf
+# This helps the network settle down
+sleep 5
+echo "=== Print-network end ==="
+
+exit 0

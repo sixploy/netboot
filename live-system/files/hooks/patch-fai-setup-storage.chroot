@@ -1,0 +1,17 @@
+#! /bin/bash
+
+# Setup-storage does not seem to play nicely with named arrays under /dev/md/
+# and tries to assemble them without slash (/dev/mdtank). This patch fixes it.
+cat << 'EOF' > /tmp/Volumes.pm.patch
+511c511
+<     if ($line =~ /^ARRAY \/dev\/md[\/]?([\w-]+)\s+/) {
+---
+>     if ($line =~ /^ARRAY \/dev\/md([\/]?[\w-]+)\s+/) {
+EOF
+
+patch /usr/share/fai/setup-storage/Volumes.pm /tmp/Volumes.pm.patch
+dpkg-divert --local --no-rename --add /usr/share/fai/setup-storage/Volumes.pm
+
+# Stop auto assembly of arrays, this might break setup-storage if they are assembled before
+# setup-storage asks them to assemble
+augtool set '/files/etc/mdadm/mdadm.conf/auto/-' 'all'

@@ -1,0 +1,4 @@
+#! /bin/bash
+
+augtool set '/files/etc/lvm/lvm.conf/global/dict/use_lvmetad/int' 0
+augtool set '/files/etc/lvm/lvm.conf/activation/dict/auto_activation_volume_list/list'

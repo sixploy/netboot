@@ -1,0 +1,12 @@
+[Unit]
+Description=Live environment service
+Before=ssh.service getty@tty1.service
+WantedBy=multi-user.target ssh.service getty@tty1.service
+
+[Service]
+Type=oneshot
+ExecStart=/root/post-boot.sh
+
+[Install]
+WantedBy=multi-user.target ssh.service
+

@@ -1,0 +1,25 @@
+#!/bin/sh
+# Script to be placed in /etc/initramfs-tools/hooks/ipv6
+
+PREREQ=""
+
+prereqs()
+{
+    echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+    prereqs
+    exit 0
+    ;;
+esac
+
+if [ ! -x /bin/ip ]; then
+    exit 0
+fi
+
+. /usr/share/initramfs-tools/hook-functions
+
+copy_exec /bin/ip
+copy_exec /bin/rdisc6

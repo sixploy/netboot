@@ -1,0 +1,31 @@
+#! /bin/bash
+
+# To avoid the need to add ip=dhcp to kernel command line parameters
+# We use this live image only as netboot anyway
+# echo "export STATICIP=dhcp" >> /etc/casper.conf
+
+# Force initramfs-tools to start dhcp for ipv4 and ipv6
+# after removing ip=dhcp from kernel command line parameters
+# Anyway ipv6 dhcp does not start based on ip=dhcp, so you can force it
+# Beware that enabling DHCPv6 on networks without DHCPv6 results in preboot
+# environment waiting for DHCPv6 timeout for MINUTES.
+
+# This should be reworked to passing IPv4/IPv6 from the cmdline, to avoid long waits for DHCP
+### echo "IP=dhcp" >> /etc/initramfs-tools/initramfs.conf
+echo "IP=none" >> /etc/initramfs-tools/initramfs.conf
+echo "IP6=none" >> /etc/initramfs-tools/initramfs.conf
+
+# from initrd scripts/functions:
+#                case ${IP} in
+#                none|done|off)
+#                ""|on|any|dhcp|bootp|both)
+#                *)
+#                        ipconfig -t ${ROUNDTTT} -d "$IP"
+#                case ${IP6} in
+#                ""|none|done|off)
+#                *)
+#                        case "${IP6}" in
+#                        on|dhcp|any)
+#                        *)
+#                                DEVICE6="$IP6" ;;
+##                                run_dhclient $ROUNDTTT -6 $(all_non_enslaved_devices)

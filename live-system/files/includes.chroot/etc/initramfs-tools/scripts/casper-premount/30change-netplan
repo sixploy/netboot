@@ -1,0 +1,27 @@
+#!/bin/sh
+
+PREREQ=""
+
+prereqs()
+{
+       echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+    prereqs)
+           prereqs
+           exit 0
+           ;;
+esac
+
+. /scripts/casper-functions
+. /scripts/casper-helpers
+
+# Remove critical: true so that when netplan with systemd-networkd takes over the configuration
+# then instead of creating new additional leases it will first release the original ones
+# Original ones are created by initramfs-tools inside initrd
+sed -i -r 's/critical:\s+[a-z]+$/critical: false/' /run/netplan/*.yaml
+
+# Remove old ifconfig configuration created by initramfs-tools inside initrd
+rm -f /run/net-*.conf /run/net6-*.conf

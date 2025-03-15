@@ -1,0 +1,143 @@
+#!/bin/sh
+PREREQ=""
+prereqs()
+{
+    echo "$PREREQ"
+}
+_set_netdev_from_hw_address()
+{
+        local want_address="$1"
+        local device
+        for device in /sys/class/net/*; do
+                if [ -f "$device/address" ] &&
+                   [ "$(cat "$device/address")" = "$want_address" ]; then
+                        echo "${device##*/}"
+                        return
+                fi
+        done
+}
+find_netcard()
+{
+    if [ -n "${BOOTIF}" ]; then
+        # pxelinux sets BOOTIF to a value based on the mac address of the
+        # network card used to PXE boot
+        # pxelinux sets BOOTIF to 01-$mac_address
+        # strip off the leading "01-", which isn't part of the mac
+
+        # address
+        temp_mac=${BOOTIF#*-}
+
+        # convert to typical mac address format by replacing "-" with ":"
+        bootif_mac=""
+        IFS='-'
+        for x in $temp_mac ; do
+            if [ -z "$bootif_mac" ]; then
+                bootif_mac="$x"
+            else
+                bootif_mac="$bootif_mac:$x"
+            fi
+        done
+        unset IFS
+        echo $(_set_netdev_from_hw_address "${bootif_mac}")
+    else
+        echo ""
+    fi
+}
+parse_options()
+{
+    local v6opts
+    v6opts="$1"
+    echo "v6opts='$v6opts'"
+
+    addr=""
+    gw=""
+    iface=$(find_netcard)
+    dns=""
+    accept_ra=0
+    forwarding=0
+
+    local IFS=","
+    for x in $v6opts; do
+        case $x in
+            addr=*)
+                addr=${x#addr=}
+                ;;
+            gw=*)
+                gw=${x#gw=}
+                ;;
+            iface=*)
+                iface=${x#iface=}
+                ;;
+            accept_ra=*)
+                accept_ra=${x#accept_ra=}
+                ;;
+            ll=*)
+                ll=${x#ll=}
+                ;;
+            forwarding=*)
+                forwarding=${x#forwarding=}
+                ;;
+            dns=*)
+                dns=${x#dns=}
+                ;;
+        esac
+    done
+    if [ ! -d /proc/sys/net/ipv6/conf/${iface} ]; then
+        echo "IPv6: Interface ${iface} not found, sorry."
+        return 0
+    fi
+    # echo -ne "IPv6 address: ${addr}\t"
+    # echo "IPv6 gateway: ${gw}"
+    # echo -ne "IPv6 iface: ${iface}\t"
+    # echo "IPv6 link-local address: ${ll}"
+    # echo "IPv6 DNS: ${dns}"
+    # echo "Accept RA: ${accept_ra} Forwarding: ${forwarding}"
+    echo ${accept_ra} > /proc/sys/net/ipv6/conf/${iface}/accept_ra
+    echo ${forwarding} > /proc/sys/net/ipv6/conf/${iface}/forwarding
+    if [ "x${ll}" != "x" ]; then
+        echo "IPv6: Setting IPv6 link-local address ${ll} on ${iface}"
+        /bin/ip -6 address flush dev ${iface} scope link
+        /bin/ip -6 address add ${ll} scope link dev ${iface}
+    fi
+    /bin/ip link set ${iface} up
+    if [ "x${addr}" != "x" ]; then
+        echo "IPv6: Setting IPv6 address ${addr} on ${iface}"
+        /bin/ip -6 address add ${addr} dev ${iface}
+    fi
+    if [ "x${gw}" != "x" ]; then
+        echo "IPv6: Setting IPv6 gateway ${gw} on ${iface}"
+        /bin/ip -6 route del default
+        /bin/ip -6 route add default via ${gw} dev ${iface}
+    fi
+    if [ "x${dns}" != "x" ]; then
+        echo "IPv6: Setting IPv6 DNS ${dns}"
+        echo "nameserver ${dns}" >> /etc/resolv.conf
+    fi
+    if [ "x${accept_ra}" != "x0" ]; then
+        echo "IPv6: Waiting 10s for RA"
+        sleep 10
+    fi
+    /bin/ip -6 addr show dev ${iface}
+    cat /etc/resolv.conf
+    return 0
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+    prereqs
+    exit 0
+    ;;
+esac
+
+for x in $(cat /proc/cmdline); do
+    case ${x} in
+    ipv6=*)
+        opt="${x#ipv6=}"
+        modprobe ipv6
+        # syntax: ipv6=addr=<address>/<netmask>,gw=<gateway>,iface=<interface>,forwarding=<0/1>,accept_ra=<0/1/2>
+        # colons are not used as delimiters due to them being in use in ipv6 addrs
+        parse_options ${opt}
+        ;;
+    esac
+done
