@@ -20,4 +20,4 @@ clean:
 	rm -rf ./bin
 
 post-deploy:
-	[ -f ./post-deploy.sh ] && ./post-deploy.sh
+	[ -f ./post-deploy.sh ] && ./post-deploy.sh || exit 0
