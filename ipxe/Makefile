@@ -4,7 +4,7 @@
 all: build post-deploy
 
 build: clean
-	[ ! -f embed.ipxe ] && (echo "You did not provide embed.ipxe. Please read the README."; exit 1)
+	[ -f embed.ipxe ] || (echo "You did not provide embed.ipxe. Please read the README."; exit 1)
 	docker run \
 		-i \
 		--rm \
