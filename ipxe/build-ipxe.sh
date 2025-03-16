@@ -43,7 +43,8 @@ sed -i -E 's^//#define ((PING|VLAN).*)^#define \1^' config/general.h
 make bin/undionly.kpxe
 cp bin/undionly.kpxe "$BINDIR/undionly.kpxe"
 
-# build the versions with embedded scripts
+# build the versions with embedded scripts AND IPv6
+sed -i -E 's^//#define (NET_PROTO_IPV6.*)^#define \1^' config/general.h
 make bin/ipxe.dsk "EMBED=$ROOTDIR/embed.ipxe"
 
 # make bin-i386-efi/ipxe.efi would build a 32-bit EFI version (obsolete these days)
